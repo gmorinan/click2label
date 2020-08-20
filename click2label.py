@@ -46,18 +46,18 @@ class ClickLabel(object):
         """
         # Check validity of arguments
         for (v, s) in [(data_folder, 'data_folder'), (result_path, 'result_path')]:
-            assert isinstance(v, str), '\''+s+'\' must be str'
+            assert isinstance(v, str), '\'' + s + '\' must be str'
         for (v, s) in [(label_options, 'label_options'), (color_options, 'color_options')]:
-            assert isinstance(v, Iterable), '\''+s + \
+            assert isinstance(v, Iterable), '\'' + s + \
                 '\' must be a list-like iterable'
-            assert len(v) == 2, '\''+s+'\' must be of length 2'
+            assert len(v) == 2, '\'' + s + '\' must be of length 2'
             assert (type(v[0]) == str) and (type(v[1]) ==
-                                            str), '\''+s+'\' elements must be str'
+                                            str), '\'' + s + '\' elements must be str'
         for (v, s) in [(rows, 'rows'), (columns, 'columns'), (fontsize, 'fontsize')]:
-            assert isinstance(v, int), '\''+s+'\' must be int'
+            assert isinstance(v, int), '\'' + s + '\' must be int'
 
-        self.rows, self.columns,  self.fontsize = rows, columns, fontsize
-        self.num = rows*columns  # number of images to display on one grid
+        self.rows, self.columns, self.fontsize = rows, columns, fontsize
+        self.num = rows * columns  # number of images to display on one grid
 
         self.result_path = result_path
         self.result = self.result_table()  # read in or create result table
@@ -132,14 +132,14 @@ class ClickLabel(object):
                 [self.image_paths[self.num:], self.image_paths[:self.num]])
 
         # create figure for grid, where height of grid varies dynamically with number of rows
-        fig = plt.figure(figsize=(9, 2+(1.5*self.rows)),
+        fig = plt.figure(figsize=(9, 2 + (1.5 * self.rows)),
                          num='LEFT CLICK: {} / RIGHT CLICK: {}'.format(*self.label_options))
 
         self.images = []  # reset list of image
         # loop through enough images to fill grid
         for idx, f in enumerate(self.image_paths[:self.num]):
             ax = fig.add_subplot(self.rows, self.columns,
-                                 idx+1)  # add subplot to grid
+                                 idx + 1)  # add subplot to grid
             self.images.append(self.SingleImage(
                 path=f, ax=ax, props=self))  # add image
 
@@ -204,8 +204,9 @@ class ClickLabel(object):
 
             overlay = self.color_map[label]  # overlay to image
             if label != 'None':  # if we have a label add overlay color
+                width, height = self.image.shape[:2]
                 self.ax.imshow(np.resize(mpcolors.to_rgb(
-                    overlay), self.image.shape), alpha=0.4)
+                    overlay), (width, height, 3)), alpha=0.4)
 
             caption_color = 'k' if label == 'None' else overlay  # caption is black if no label
             caption = 'Label: ' + str(label)  # to display below x-axis
