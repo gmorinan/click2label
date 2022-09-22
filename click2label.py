@@ -19,7 +19,8 @@ class ClickLabel(object):
                  color_options=['red', 'blue'],
                  rows=2,
                  columns=4,
-                 fontsize=10
+                 fontsize=10,
+                 default_label=None
                  ):
         """Constructs attributes and reads in any existing result table
 
@@ -42,6 +43,8 @@ class ClickLabel(object):
                 number of columns to display on each labelling grid
             fontsize: int
                 size of font for text displayed on labelling grid
+            default_label: str
+                label of each image by default (if specified)
 
         """
         # Check validity of arguments
@@ -72,6 +75,8 @@ class ClickLabel(object):
         # map each label to color, with the 'None' label given False
         self.color_map = {
             **dict([(label_options[x], color_options[x]) for x in [0, 1]]), 'None': False}
+        
+        self.default_label = default_label
 
     def result_table(self):
         """Attempts to read from a previous result table if one exists, else creates a new result table"""
@@ -140,8 +145,12 @@ class ClickLabel(object):
         for idx, f in enumerate(self.image_paths[:self.num]):
             ax = fig.add_subplot(self.rows, self.columns,
                                  idx + 1)  # add subplot to grid
-            self.images.append(self.SingleImage(
-                path=f, ax=ax, props=self))  # add image
+            single_img = self.SingleImage(
+                path=f, ax=ax, props=self)
+            if self.default_label != None:
+                if not hasattr(single_img, 'lable'):
+                    single_img.update(label=self.default_label) 
+            self.images.append(single_img)  # add image
 
         cid = fig.canvas.mpl_connect(
             'button_press_event', self.onclick)  # connect event handler
